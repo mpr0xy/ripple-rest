@@ -8,6 +8,59 @@ An example configuration file is provided [here](../config-example.json).
 
 ----------
 
+### Version 0.0.2
+
+```js
+{
+  "config_version": "0.0.2",
+  "PORT": 5990,
+  "NODE_ENV": "development",
+  "HOST": "localhost",
+  "DATABASE_URL": "postgres://ripple_rest_user:password@localhost:5432/ripple_rest_db",
+  "ssl": {
+    "key_path": "./certs/server.key",
+    "cert_path": "./certs/server.crt"
+  },
+  "rippled_servers": [
+    {
+      "host": "s_west.ripple.com",
+      "port": 443,
+      "secure": true
+    }
+  ],
+  "currency_prioritization": [
+    "XRP",
+    "EUR",
+    "GBP",
+    "AUD",
+    "NZD",
+    "USD",
+    "CAD",
+    "CHF",
+    "MXN",
+    "SGD", 
+    "NOK", 
+    "JPY",
+    "CNY"
+  ],
+  "currency_pair_exceptions": [
+    "ZAR/JPY"
+  ]
+}
+```
+
++ `config_version` - will be checked by the configuration loader and it will throw an error if there have been breaking changes to the format
++ `PORT` - the port that the API server will be available on
++ `NODE_ENV` - either `development`, `staging`, or `production`
++ `HOST` - the host the API server will be available on
++ `DATABASE_URL` - the URL used to connect to the PostgreSQL database
++ `ssl` - if an object with `key_path` and `cert_path` are provided, the API server will be available over HTTPS
++ `rippled_servers` - an array of server objects indicating which `rippled` servers the API should connect to. These should be configured to point to your local `rippled` if you are running one, instead of `s_west.ripple.com`
++ `currency_prioritization` - an array of currency codes that is used to determine the base currency of Orders. Currencies that appear earlier in the list will take priority over those that appear later
++ `currency_pair_exceptions` - an array of exceptions to the `currency_prioritization`. Exceptions should be formatted as "{base}/{counter}"
+
+----------
+
 ### Version 0.0.1
 
 ```js

@@ -16,9 +16,9 @@ module.exports = function(opts) {
         res.json({ success: true, balances: balances });
       }
     });
-  };
+  }
 
   return {
     getBalances: getBalances
-  }
+  };
 };

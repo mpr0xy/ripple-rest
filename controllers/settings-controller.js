@@ -12,7 +12,7 @@ module.exports = function(opts) {
         res.json({ success: true, settings: settings });
       }
     });
-  };
+  }
 
   function changeSettings(req, res) {
     var params = req.params;
@@ -28,10 +28,10 @@ module.exports = function(opts) {
         res.json({ success: true, settings: settings });
       }
     });
-  };
+  }
 
   return {
     getSettings: getSettings,
     changeSettings: changeSettings
-  }
+  };
 };

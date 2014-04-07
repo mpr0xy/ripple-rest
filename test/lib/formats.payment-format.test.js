@@ -3,7 +3,7 @@
 var expect         = require('chai').expect;
 var ripple         = require('ripple-lib');
 var clone          = require('clone');
-var payment_format = require('../../lib/formats/payment-format');
+var payment_format = require('../../lib/formatters/payment-formatter');
 
 var payment_xrp    = require('../testdata/payment_xrp.json');
 var payment_usd    = require('../testdata/payment_usd.json');
@@ -11,7 +11,7 @@ var tx_payment_xrp = require('../testdata/tx_payment_xrp.json');
 var tx_payment_usd = require('../testdata/tx_payment_usd.json');
 var pathfind       = require('../testdata/pathfind.json');
 
-describe('lib/formats/payments', function(){
+describe('lib/formatters/payment-formatter', function(){
 
   describe('.paymentIsValid()', function(){
 
@@ -319,12 +319,12 @@ describe('lib/formats/payments', function(){
 
   });
 
-  describe('.paymentToRippleLibTransaction()', function(){
+  describe('.paymentToTransaction()', function(){
 
     it('should replace blank currency issuers with the address of the sender or receiver', function(done){
       var payment1 = clone(payment_usd);
       payment1.destination_amount.issuer = '';
-      payment_format.paymentToRippleLibTransaction(payment1, function(err, transaction){
+      payment_format.paymentToTransaction(payment1, function(err, transaction){
         expect(err).not.to.exist;
         expect(transaction).to.exist;
         expect(transaction.tx_json.Amount.issuer).to.equal(transaction.tx_json.Destination);
@@ -334,7 +334,7 @@ describe('lib/formats/payments', function(){
 
     it('should only set the SendMax if the source_amount and destination_amounts are different', function(done){
       var payment1 = clone(payment_xrp);
-      payment_format.paymentToRippleLibTransaction(payment1, function(err, transaction){
+      payment_format.paymentToTransaction(payment1, function(err, transaction){
         expect(err).not.to.exist;
         expect(transaction).to.exist;
         expect(transaction.tx_json.SendMax).not.to.exist;
@@ -342,7 +342,7 @@ describe('lib/formats/payments', function(){
 
       var payment2 = clone(payment_usd);
       payment2.source_amount = payment2.destination_amount;
-      payment_format.paymentToRippleLibTransaction(payment2, function(err, transaction){
+      payment_format.paymentToTransaction(payment2, function(err, transaction){
         expect(err).not.to.exist;
         expect(transaction).to.exist;
         expect(transaction.tx_json.SendMax).not.to.exist;
@@ -352,7 +352,7 @@ describe('lib/formats/payments', function(){
 
     it('should accept paths as a string or an object', function(done){
       var payment1 = clone(payment_usd);
-      payment_format.paymentToRippleLibTransaction(payment1, function(err, transaction){
+      payment_format.paymentToTransaction(payment1, function(err, transaction){
         expect(err).not.to.exist;
         expect(transaction).to.exist;
         expect(transaction.tx_json.Paths).to.exist;
@@ -360,7 +360,7 @@ describe('lib/formats/payments', function(){
 
       var payment2 = clone(payment_usd);
       payment2.pahts = JSON.parse(payment2.paths);
-      payment_format.paymentToRippleLibTransaction(payment2, function(err, transaction){
+      payment_format.paymentToTransaction(payment2, function(err, transaction){
         expect(err).not.to.exist;
         expect(transaction).to.exist;
         expect(transaction.tx_json.Paths).to.exist;
@@ -373,14 +373,14 @@ describe('lib/formats/payments', function(){
 
       var payment1 = clone(payment_usd);
       delete payment1.source_amount;
-      payment_format.paymentToRippleLibTransaction(payment1, function(err, transaction){
+      payment_format.paymentToTransaction(payment1, function(err, transaction){
         expect(err).not.to.exist;
         expect(transaction).to.exist;
       });
 
       var payment2 = clone(payment_xrp);
       delete payment2.source_amount;
-      payment_format.paymentToRippleLibTransaction(payment2, function(err, transaction){
+      payment_format.paymentToTransaction(payment2, function(err, transaction){
         expect(err).not.to.exist;
         expect(transaction).to.exist;
         done();
@@ -391,7 +391,7 @@ describe('lib/formats/payments', function(){
     it('should convert a properly formatted payment into a ripple-lib transaction', function(done){
 
       var payment1 = clone(payment_usd);
-      payment_format.paymentToRippleLibTransaction(payment1, function(err, transaction){
+      payment_format.paymentToTransaction(payment1, function(err, transaction){
         expect(err).not.to.exist;
         expect(transaction).to.exist;
         expect(transaction.tx_json).to.deep.equal({

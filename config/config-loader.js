@@ -1,3 +1,4 @@
+var _     = require('lodash');
 var fs    = require('fs');
 var nconf = require('nconf');
 
@@ -41,17 +42,40 @@ nconf.defaults({
   PORT: 5990,
   NODE_ENV: 'development',
   HOST: 'localhost',
-  // sqlite: {
-  //   schemas: __dirname + '/../schemas-for-sqlite',
-  //   files: __dirname + '../'
-  // },
   rippled_servers: [
     {
       host: 's-west.ripple.com',
       port: 443,
       secure: true
     }
+  ],
+  currency_prioritization: [
+    'XRP',
+    'EUR',
+    'GBP',
+    'AUD',
+    'NZD',
+    'USD',
+    'CAD',
+    'CHF',
+    'MXN',
+    'SGD', 
+    'NOK', 
+    'JPY',
+    'CNY'
+  ],
+  currency_pair_exceptions: [
+    'ZAR/JPY'
   ]
 });
+
+// Make sure currency codes are uppercase
+function uppercaseArray(array) {
+  return _.map(array, function(val){
+    return val.toUpperCase();
+  });
+}
+nconf.set('currency_prioritization', uppercaseArray(nconf.get('currency_prioritization')));
+nconf.set('currency_pair_exceptions', uppercaseArray(nconf.get('currency_pair_exceptions')));
 
 module.exports = nconf;

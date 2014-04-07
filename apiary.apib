@@ -403,6 +403,10 @@ Submit a new order.
         "type": "string",
         "pattern": "^[0-9]*$"
       },
+      "passive": {
+        "description": "Boolean that if set to true indicates this order should not take other orders as it is being placed. This is set by market makers intending to add market liquidity and allows opposing offers to be placed at the same price point with no spread",
+        "type": "boolean"
+      },
       "immediate_or_cancel": {
         "description": "If set to true this order will only take orders that are available at the time of execution and will not create an entry in the Ripple Ledger",
         "type": "boolean"
@@ -434,7 +438,7 @@ Submit a new order.
   }
   ```
 
-## Order Retrieval and Cancellation [/v1/accounts/{address}/orders/{sequence,client_resource_id}]
+## Order Retrieval and Cancellation [/v1/accounts/{address}/orders/{sequence,client_resource_id}{?hash}]
 
 ### GET 
 
@@ -445,6 +449,7 @@ Retrieve the details of a particular outstanding order.
   + address (required, Ripple Address) ... The Ripple address of the owner's account
   + sequence (optional, integer) ... The sequence number of the order to retrieve. All orders can be uniquely identified by the account that placed them and their sequence number. Either the sequence number or the client_resource_id must be supplied
   + client_resource_id (optional, string of ASCII-printable characters, `71609718-e19b-46b3-9ec7-a11441748f5f`) ... The client-supplied unique identifier of an order submitted through `ripple-rest`. Note that these are only stored in `ripple-rest`'s, not in the order details on Ripple. Either the client_resource_id or the sequence number must be supplied
+  + hash (optional, 256-bit hash) ... The 256-bit hash of a transaction that created, modified, or cancelled this order. This is used for historical lookups of the state of an order after the specified transaction was validated and applied. An error will be returned if the specified transaction did not affect the specified order or if the rippled's historical database does not have the details of this transaction
 
 + Response 200
 

@@ -5,78 +5,69 @@
   "type": "object",
   "properties": {
     "account": {
-      "description": "The Ripple account address of the order's creator",
+      "description": "Ripple Address of the order's creator",
       "$ref": "RippleAddress"
     },
-    "buy": {
-      "description": "If set to true the order it indicates that the creator is looking to receive the base_amount in exchange for the counter_amount. If undefined or set to false it indicates that the creator is looking to sell the base_amount to receive the counter_amount",
+    "is_bid": {
+      "description": "Order is a bid if true, or an ask otherwise",
       "type": "boolean"
     },
     "base_amount": {
-      "description": "The amount of currency the seller_account is seeking to buy. If other orders take part of this one, this value will change to represent the amount left in the order. This may be specified along with the counter_amount OR exchange_rate but not both. When the order is parsed from the Ripple Ledger the base currency will be determined according to the Priority Ranking of Currencies (XRP,EUR,GBP,AUD,NZD,USD,CAD,CHF,JPY,CNY) and if neither currency is listed in the ranking the base currency will be the one that is alphabetically first",
+      "description": "If the order is a bid, the Amount representing what the order's creator wishes to buy. If the order is an ask, the Amount representing what the order's creator wishes to sell. If an order is partially or fully consumed this value will decrease",
       "$ref": "Amount"
     },
     "counter_amount": {
-      "description": "The amount of currency being sold. If other orders take part of this one, this value will change to represent the amount left in the order. This may be specified along with the base_amount OR the exchange_rate but not both",
+      "description": "If the order is a bid, the Amount representing what the order's creator wishes to sell. If the order is an ask, the Amount representing what the order's creator wishes to buy. If an order is partially or fully consumed this value will decrease",
       "$ref": "Amount"
     },
     "exchange_rate": {
-      "description": "A string representation of the order price, defined as the cost one unit of the base currency in terms of the counter currency. This may be specified along with the base_amount OR the counter_amount but not both. If it is unspecified it will be computed automatically based on the counter_amount divided by the base_amount",
+      "description": "The quantity of the counter currency needed to buy 1 unit of the base currency. This value is fixed when the order is created and will never change, even if the order is partially or fully consumed and rounding error causes this value to not exactly equal the counter_amount divided by the base_amount",
       "$ref": "FloatString"
     },
-    "expiration_timestamp": {
-      "description": "The ISO combined date and time string representing the point beyond which the order will no longer be considered active or valid",
-      "$ref": "Timestamp"
-    },
-    "ledger_timeout": {
-      "description": "A string representation of the number of ledger closes after submission during which the order should be considered active",
-      "type": "string",
-      "pattern": "^[0-9]*$"
+    "passive": {
+      "description": "Boolean that if set to true indicates this order should not take other orders as it is being placed. This is set by market makers intending to add market liquidity and allows opposing offers to be placed at the same price point with no spread",
+      "type": "boolean"
     },
     "immediate_or_cancel": {
-      "description": "If set to true this order will only take orders that are available at the time of execution and will not create an entry in the Ripple Ledger",
+      "description": "Boolean that if set to true indicates this order should only take orders that are available at the time of execution and will not create an entry in the Ripple Ledger",
       "type": "boolean"
     },
     "fill_or_kill": {
-      "description": "If set to true this order will only take orders that fill the base_amount and are available at the time of execution and will not create an entry in the Ripple Ledger",
+      "description": "Boolean that if set to true this order will only take orders that fill the base_amount and are available at the time of execution and will not create an entry in the Ripple Ledger",
       "type": "boolean"
     },
     "maximize_buy_or_sell": {
-      "description": "If set to true and it is a buy order it will buy up to the base_amount even if the counter_amount is exceeded, if it is a sell order it will sell up to the counter_amount even if the base_amount is exceeded",
+      "description": "Boolean that if set to true and the order is a bid indicates that the creator wishes to buy up to the base_amount even if the counter_amount is exceeded. If it is true and the order is an ask it indicates the creator wishes to sell up to the counter_amount even if the base_amount is exceeded",
       "type": "boolean"
     },
     "cancel_replace": {
-      "description": "If this is set to the sequence number of an outstanding order, that order will be cancelled and replaced with this one",
+      "description": " The sequence number of an outstanding order that should be cancelled and replaced by this one",
       "type": "string",
       "pattern": "^d*$"
     },
     "sequence": {
-      "description": "The sequence number of this order from the perspective of the seller_account. The seller_account and the sequence number uniquely identify the order in the Ripple Ledger",
+      "description": "The sequence number of the order on the creator's account. All orders can be uniquely identified by the address of the creator and their sequence number",
       "type": "string",
       "pattern": "^[0-9]*$"
     },
-    "fee": {
-      "description": "The Ripple Network transaction fee, represented in whole XRP (NOT \"drops\", or millionths of an XRP, which is used elsewhere in the Ripple protocol) used to create the order",
-      "$ref": "FloatString"
-    },
     "state": {
-      "description": "If the order is active the state will be \"active\". If this object represents a historical order the state will be \"validated\", \"filled\" if the order was removed because it was fully filled, \"cancelled\" if it was deleted by the owner, \"expired\" if it reached the expiration_timestamp, or \"failed\" if there was an error with the initial attempt to place the order",
+      "description": "Possible values are \"active\", \"partially_filled\", \"filled\", \"cancelled\", \"failed\"",
       "type": "string",
-      "pattern": "^active|validated|filled|cancelled|expired|failed$"
+      "pattern": "^active|partially_filled|filled|cancelled|failed$"
     },
     "ledger": {
-      "description": "The string representation of the index number of the ledger containing this order or, in the case of historical queries, of the transaction that modified this Order. ",
+      "description": "If the order is returned from a historical query, the last ledger sequence when the order was modified",
       "type": "string",
       "pattern": "^[0-9]+$"
     },
     "hash": {
-      "description": "When returned as the result of a historical query this will be the hash of Ripple transaction that created, modified, or deleted this order. The transaction hash is used throughout the Ripple Protocol to uniquely identify a particular transaction",
+      "description": "If the order is returned from a historical query, the hash of the last transaction that modified the order",
       "$ref": "Hash256"
     },
-    "previous": {
-      "description": "If the order was modified or partially filled this will be a full Order object. If the previous object also had a previous object that will be removed to reduce data complexity. Order changes can be walked backwards by querying the API for previous.hash repeatedly",
-      "$ref": "Order"
+    "previous_url": {
+      "description": "If the order is returned from a historical query, the URL of the previous transaction that modified the order",
+      "$ref": "URL"
     }
   },
-  "required": ["account"]
+  "required": ["account", "is_buy"]
 }
