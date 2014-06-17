@@ -270,7 +270,7 @@ function paymentToTransaction(payment, callback) {
     }
 
     if (payment.invoice_id) {
-      transaction_data.invoiceID = payment.invoice_id;
+      transaction.invoiceID(payment.invoice_id);
     }
 
     transaction.payment(transaction_data);
